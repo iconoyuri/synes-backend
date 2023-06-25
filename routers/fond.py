@@ -1,14 +1,14 @@
 from fastapi import APIRouter
 from schemas import Fond, FondData
 from typing import List
-from fastapi_pagination import Page, paginate
+from fastapi_pagination import LimitOffsetPage, paginate
 
 router = APIRouter(
     prefix='/fond',tags=['Fond']
 )
 
 
-@router.get('/all', response_model=Page[Fond])
+@router.get('/all', response_model=LimitOffsetPage[Fond])
 def get_fonds():
     return paginate([])
     ...

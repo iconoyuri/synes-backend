@@ -1,14 +1,14 @@
 from fastapi import APIRouter
 from schemas import Contribution, ContributionData
 from typing import List
-from fastapi_pagination import Page, paginate
+from fastapi_pagination import LimitOffsetPage, paginate
 
 router = APIRouter(
     prefix='/contribution',tags=['Contribution']
 )
 
 
-@router.get('/all', response_model=Page[Contribution])
+@router.get('/all', response_model=LimitOffsetPage[Contribution])
 def get_contributions():
     return paginate([])
     ...

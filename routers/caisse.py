@@ -1,14 +1,14 @@
 from fastapi import APIRouter
 from schemas import Caisse, CaisseData
 from typing import List
-from fastapi_pagination import Page, paginate
+from fastapi_pagination import LimitOffsetPage, paginate
 
 router = APIRouter(
     prefix='/caisse',tags=['Caisse']
 )
 
 
-@router.get('/all', response_model=Page[Caisse])
+@router.get('/all', response_model=LimitOffsetPage[Caisse])
 def get_caisses():
     return paginate([])
     ...

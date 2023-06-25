@@ -1,14 +1,14 @@
 from fastapi import APIRouter
 from schemas import Depense, DepenseData
 from typing import List
-from fastapi_pagination import Page, paginate
+from fastapi_pagination import LimitOffsetPage, paginate
 
 router = APIRouter(
     prefix='/depense',tags=['Depense']
 )
 
 
-@router.get('/all', response_model=Page[Depense])
+@router.get('/all', response_model=LimitOffsetPage[Depense])
 def get_depenses():
     return paginate([])
     ...

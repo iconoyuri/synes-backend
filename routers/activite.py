@@ -1,14 +1,14 @@
 from fastapi import APIRouter, UploadFile
 from schemas import Activite, ActiviteData
 from typing import List
-from fastapi_pagination import Page, paginate
+from fastapi_pagination import LimitOffsetPage, paginate
 
 router = APIRouter(
     prefix='/activite',tags=['Activite']
 )
 
 
-@router.get('/all', response_model=Page[Activite])
+@router.get('/all', response_model=LimitOffsetPage[Activite])
 def get_activites():
     return paginate([])
     ...

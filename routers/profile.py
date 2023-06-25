@@ -1,14 +1,14 @@
 from fastapi import APIRouter, UploadFile
 from schemas import User, UserData
 from typing import List
-from fastapi_pagination import Page, paginate
+from fastapi_pagination import LimitOffsetPage, paginate
 
 router = APIRouter(
     prefix='/user',tags=['User']
 )
 
 
-@router.get('/all', response_model=Page[User])
+@router.get('/all', response_model=LimitOffsetPage[User])
 def get_profiles():
     return paginate([])
     ...
