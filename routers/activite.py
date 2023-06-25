@@ -1,4 +1,4 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, UploadFile
 from schemas import Activite, ActiviteData
 from typing import List
 
@@ -30,3 +30,10 @@ def modify_activite(id:str, activite:ActiviteData):
 @router.delete('/{id}')
 def delete_activite(id:str):
     ...
+
+
+@router.post('/photos/{id}')
+def upload_bien_photos(id:str,photos:List[UploadFile]):
+    # return id
+    ...
+

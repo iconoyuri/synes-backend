@@ -1,3 +1,4 @@
+from fastapi import UploadFile
 from pydantic import BaseModel, EmailStr
 from typing import List, Optional
 from datetime import datetime
@@ -61,7 +62,7 @@ class UserData(BaseModel):
     nationalite:str 
     adresse_mail:EmailStr
     phone_number:str
-    # photo:Photo
+    photo:UploadFile
 
 class Section(Entity):
     nom:str
@@ -79,6 +80,7 @@ class Activite(Entity):
     membre_convies:List[TinyUser]
     date_debut:datetime
     date_fin:datetime
+    photos:List[Photo]
 
 class ActiviteData(BaseModel):
     id_createur:str
@@ -139,6 +141,7 @@ class Bien(Entity):
 class BienData(BaseModel):
     section:TinySection
     nom:str
+    photos:List[UploadFile]
     # photos:List[Photo]
     description:str 
     valeur_marchande:Optional[str]

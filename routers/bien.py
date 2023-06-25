@@ -33,6 +33,6 @@ def delete_bien(id:str):
 
 
 @router.post('/photos')
-def upload_bien_photo(photos:List[UploadFile]):
+def upload_bien_photos(photos:List[UploadFile]):
     ...
 
