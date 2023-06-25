@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from schemas import User, UserData
+from schemas import User, UserData, Section
 from typing import List
 
 router = APIRouter(
@@ -29,4 +29,9 @@ def modify_profile(id:str, profile:UserData):
 
 @router.delete('/{id}')
 def delete_profile(id:str):
+    ...
+
+
+@router.post('/section/{id_user}/{id_section}')
+def affect_to_section(id_user:str,id_section:str):
     ...
