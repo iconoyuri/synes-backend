@@ -40,7 +40,7 @@ class User(BaseModel):
     nom:str 
     etablissement:str
     age:int 
-    # sexe:Literal['M', 'F']
+    section:TinySection
     sexe:str
     specialite:str
     nationalite:str 
@@ -52,8 +52,8 @@ class UserData(BaseModel):
     matricule:str
     nom:str 
     etablissement:str
+    id_section:str
     age:int 
-    # sexe:Literal['M', 'F']
     sexe:str
     specialite:str
     nationalite:str 
