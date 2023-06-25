@@ -1,14 +1,16 @@
 from fastapi import APIRouter
 from schemas import Section, SectionData
 from typing import List
+from fastapi_pagination import Page, paginate
 
 router = APIRouter(
     prefix='/section',tags=['Section']
 )
 
 
-@router.get('/all', response_model=List[Section])
+@router.get('/all', response_model=Page[Section])
 def get_sections():
+    paginate([])
     ...
 
 

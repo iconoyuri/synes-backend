@@ -1,5 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi_pagination import add_pagination
+
 
 APP_NAME = "Synes"
 app = FastAPI(
@@ -16,8 +18,6 @@ app.add_middleware(
 )
 
 
-
-
 from routers import action, activite, bien, caisse, depense, fond, notification, profile, section, contribution
 
 app.include_router(action.router)
@@ -32,3 +32,4 @@ app.include_router(section.router)
 app.include_router(contribution.router)
 # app.include_router(action.router)
 
+add_pagination(app)

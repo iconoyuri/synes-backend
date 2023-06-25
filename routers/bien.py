@@ -1,14 +1,16 @@
 from fastapi import APIRouter, UploadFile
 from schemas import Bien, BienData
 from typing import List
+from fastapi_pagination import Page, paginate
 
 router = APIRouter(
     prefix='/bien',tags=['Bien']
 )
 
 
-@router.get('/all', response_model=List[Bien])
+@router.get('/all', response_model=Page[Bien])
 def get_biens():
+    return paginate([])
     ...
 
 
