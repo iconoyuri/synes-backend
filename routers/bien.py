@@ -1,4 +1,4 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, UploadFile
 from schemas import Bien, BienData
 from typing import List
 
@@ -30,3 +30,9 @@ def modify_bien(id:str, bien:BienData):
 @router.delete('/{id}')
 def delete_bien(id:str):
     ...
+
+
+@router.post('/')
+def upload_bien_photo(photos:List[UploadFile]):
+    ...
+

@@ -1,5 +1,5 @@
-from fastapi import APIRouter
-from schemas import User, UserData, Section
+from fastapi import APIRouter, UploadFile
+from schemas import User, UserData
 from typing import List
 
 router = APIRouter(
@@ -19,6 +19,11 @@ def get_profile(id:str):
 
 @router.post('/')
 def post_profile(profile:UserData):
+    ...
+
+
+@router.post('/')
+def post_profile_photo(photo:UploadFile):
     ...
 
 

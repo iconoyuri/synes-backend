@@ -61,7 +61,7 @@ class UserData(BaseModel):
     nationalite:str 
     adresse_mail:EmailStr
     phone_number:str
-    photo:Photo
+    # photo:Photo
 
 class Section(Entity):
     nom:str
@@ -139,7 +139,7 @@ class Bien(Entity):
 class BienData(BaseModel):
     section:TinySection
     nom:str
-    photos:List[Photo]
+    # photos:List[Photo]
     description:str 
     valeur_marchande:Optional[str]
 
