@@ -40,8 +40,7 @@ class User(BaseModel):
     nom:str 
     etablissement:str
     age:int 
-    # sexe:Literal['M', 'F']
-    sexe:str
+    sexe:Literal['M', 'F']
     specialite:str
     nationalite:str 
     adresse_mail:EmailStr
@@ -53,8 +52,7 @@ class UserData(BaseModel):
     nom:str 
     etablissement:str
     age:int 
-    # sexe:Literal['M', 'F']
-    sexe:str
+    sexe:Literal['M', 'F']
     specialite:str
     nationalite:str 
     adresse_mail:EmailStr
