@@ -2,6 +2,9 @@ from pydantic import BaseModel, EmailStr
 from typing import List, Optional
 from datetime import datetime
 
+class Entity(BaseModel):
+    id:str
+    date_creation:datetime
 
 
 class TinyEntity(BaseModel):
@@ -34,8 +37,7 @@ class TinyBien(TinyEntity):
 class Photo(BaseModel):
     image_link:str
 
-class User(BaseModel):
-    id:str
+class User(Entity):
     matricule:str
     nom:str 
     etablissement:str
@@ -61,8 +63,7 @@ class UserData(BaseModel):
     phone_number:str
     photo:Photo
 
-class Section(BaseModel):
-    id:str
+class Section(Entity):
     nom:str
     etablissement:str
 
@@ -70,8 +71,7 @@ class SectionData(BaseModel):
     nom:str
     etablissement:str
 
-class Activite(BaseModel):
-    id:str 
+class Activite(Entity):
     createur:TinyUser
     titre:str
     lieu:str
@@ -89,8 +89,7 @@ class ActiviteData(BaseModel):
     date_debut:datetime
     date_fin:datetime
 
-class Fond(BaseModel):
-    id:str
+class Fond(Entity):
     createur:TinyUser
     id_caisse:Optional[str]
     titre:str
@@ -104,8 +103,7 @@ class FondData(BaseModel):
     description:str
     montant:float
 
-class Caisse(BaseModel):
-    id:str
+class Caisse(Entity):
     createur:TinyUser
     nom:str
     description:str
@@ -117,8 +115,7 @@ class CaisseData(BaseModel):
     description:str
     montant_courant:float
 
-class Depense(BaseModel):
-    id:str
+class Depense(Entity):
     createur:TinyUser
     id_caisse:Optional[str]
     titre:str
@@ -132,8 +129,7 @@ class DepenseData(BaseModel):
     description:str
     montant:float
 
-class Bien(BaseModel):
-    id:str
+class Bien(Entity):
     section:TinySection
     nom:str
     photos:List[Photo]
@@ -161,15 +157,13 @@ class Action(BaseModel):
     objet:Objet
     date:datetime
 
-class Notification(BaseModel):
-    id:str
+class Notification(Entity):
     contenu:str 
     entity:TinyEntity
     type:str
 
 
-class Contribution(BaseModel):
-    id:str
+class Contribution(Entity):
     id_fond:str 
     id_user:str
     montant:float
