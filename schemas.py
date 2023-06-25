@@ -166,3 +166,20 @@ class Notification(BaseModel):
     contenu:str 
     entity:TinyEntity
     type:str
+
+
+class Contribution(BaseModel):
+    id:str
+    id_fond:str 
+    id_user:str
+    montant:float
+
+class ContributionData(BaseModel):
+    id_fond:str 
+    id_user:str
+    montant:float
+
+
+class UserLoginResponse(BaseModel):
+    access_token: str
+    token_type: str
