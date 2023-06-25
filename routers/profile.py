@@ -35,3 +35,8 @@ def delete_profile(id:str):
 @router.post('/section/{id_user}/{id_section}')
 def affect_to_section(id_user:str,id_section:str):
     ...
+
+
+@router.post('/password/{previous_pwd}/{new_pwd}')
+def affect_to_section(previous_pwd:str,new_pwd:str):
+    ...
