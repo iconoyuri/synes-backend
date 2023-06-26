@@ -12,7 +12,7 @@ class User(GraphObject):
     nationalite = Property()
     adresse_mail = Property()
     phone_number = Property()
-    password = Property()
+    mot_de_passe = Property()
 
     etablissement = RelatedTo("Etablissement",'belong')
     section = RelatedTo("Section",'belong')
