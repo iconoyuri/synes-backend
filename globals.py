@@ -1,7 +1,7 @@
 
 from dotenv import load_dotenv
 import os
-from py2neo import Graph
+from functions import graph_driver
 
 load_dotenv()
 
@@ -15,4 +15,4 @@ MAIL_SENDER_ADDRESS = os.getenv("MAIL_SENDER_ADDRESS")
 MAIL_APP_SENDER_PASSWORD = os.getenv("MAIL_APP_SENDER_PASSWORD")
 
 
-graph_driver = Graph(uri=DATABASE_URI,auth=(DATABASE_DEFAULT_USERNAME,DATABASE_DEFAULT_PASSWORD))
+default_driver = graph_driver(DATABASE_DEFAULT_USERNAME, DATABASE_DEFAULT_PASSWORD)
