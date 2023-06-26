@@ -3,7 +3,6 @@ from fastapi.security import OAuth2PasswordBearer
 from typing import Optional
 from jose import JWTError, jwt
 from datetime import datetime, timedelta
-from token_handler import verify_token
 from globals import ACCESS_TOKEN_EXPIRE_MINUTES
 
 
