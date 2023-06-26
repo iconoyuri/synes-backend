@@ -18,7 +18,7 @@ app.add_middleware(
 )
 
 
-from routers import action, activite, bien, caisse, depense, fond, notification, profile, section, contribution
+from routers import action, activite, bien, caisse, depense, fond, notification, profile, section, contribution, authentication
 
 app.include_router(action.router)
 app.include_router(activite.router)
@@ -30,6 +30,6 @@ app.include_router(notification.router)
 app.include_router(profile.router)
 app.include_router(section.router)
 app.include_router(contribution.router)
-# app.include_router(action.router)
+app.include_router(authentication.router)
 
 add_pagination(app)
