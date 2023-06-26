@@ -36,7 +36,7 @@ class TinyBien(TinyEntity):
 
 
 class Photo(BaseModel):
-    image_link:str
+    link:str
 
 class User(Entity):
     matricule:str

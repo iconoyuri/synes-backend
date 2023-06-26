@@ -1,9 +1,9 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi_pagination import add_pagination
+from globals import APP_NAME
 
 
-APP_NAME = "Synes"
 app = FastAPI(
     title=APP_NAME,
     description=f"This is the backend service of the {APP_NAME} application")
