@@ -1,7 +1,6 @@
 
 from dotenv import load_dotenv
 import os
-from functions import graph_driver
 
 load_dotenv()
 
@@ -15,4 +14,4 @@ MAIL_SENDER_ADDRESS = os.getenv("MAIL_SENDER_ADDRESS")
 MAIL_APP_SENDER_PASSWORD = os.getenv("MAIL_APP_SENDER_PASSWORD")
 
 
-default_driver = graph_driver(DATABASE_DEFAULT_USERNAME, DATABASE_DEFAULT_PASSWORD)
+ACCESS_TOKEN_EXPIRE_MINUTES = 1440

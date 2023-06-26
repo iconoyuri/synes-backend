@@ -1,7 +1,10 @@
 from fastapi import status, Depends, APIRouter, HTTPException
 from fastapi.security import OAuth2PasswordRequestForm
 from schemas import UserLoginResponse
-from token_handler import create_access_token
+from oauth2 import create_access_token
+from passlib.context import CryptContext
+from py2neo_schemas import User
+from functions import default_driver, verify_email
 
 
 router = APIRouter(
@@ -10,54 +13,34 @@ router = APIRouter(
 )
 
 
-# @router.post("/login", status_code=status.HTTP_200_OK, response_model=UserLoginResponse)
-# def login(login_form: OAuth2PasswordRequestForm = Depends()):
-#     ...
-
+@router.post("/login", status_code=status.HTTP_200_OK, response_model=UserLoginResponse)
+def login(login_form: OAuth2PasswordRequestForm = Depends()):
+    email = login_form.username.lower()
+    verify_email(email)
     
-
-# @router.post("/login", status_code=status.HTTP_200_OK, response_model=UserLoginResponse)
-@router.post("/login", status_code=status.HTTP_200_OK)
-def login(login_form: OAuth2PasswordRequestForm = Depends()): 
-    username = login_form.username.lower()
-    return None
-    
-    user = find_user(username, login_form.password)
+    user = find_user(email, login_form.password)
     if user:
-        if user.activated: 
-            access_token = create_access_token(
-                data={"sub": user.login}
-            )
-            user_type = None
-            if user.member:
-                user_type = "member"
-            elif user.admin:
-                user_type = "admin"
-            else:
-                user_type = "user"
-
-            return {"access_token": access_token, "token_type": "bearer", "user_type": user_type}
-        else: 
-            raise HTTPException(
-                    status_code=status.HTTP_401_UNAUTHORIZED, 
-                    detail="This user account isn't yet activated. Look for the activation link in your mail box"
-            )
+        credentials = f"{email}\\\\{login_form.password}"
+        access_token = create_access_token(
+            data={"sub": credentials}
+        )
+        return {"access_token": access_token, "token_type": "bearer"}
     else: 
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, 
-            detail="The user doesn't exists"
+            detail="User doesn't exists or password is wrong"
         )
 
+def find_user(identifier, password):
+    
+    user = User.match(default_driver,identifier).first()
 
+    if not user: 
+        return False
 
-# def find_user(login, password):
-#     user = User.match(main_graph).where(f"_.email = '{login}' OR _.login = '{login}'").first()
-#     if not user: 
-#         return False    
-
-#     pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-#     same_password = pwd_context.verify(password, user.password)
-#     if same_password:
-#         return user 
-#     else: 
-#         return None
+    pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+    same_password = pwd_context.verify(password, user.mot_de_passe)
+    if same_password:
+        return user 
+    else: 
+        return None
