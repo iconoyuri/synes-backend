@@ -52,16 +52,18 @@ class User(Entity):
     photo:Photo
 
 class UserData(BaseModel):
+    
     matricule:str
     nom:str 
     etablissement:str
     id_section:str
-    age:int 
-    sexe:str
-    specialite:str
-    nationalite:str 
     adresse_mail:EmailStr
-    phone_number:str
+
+    age:Optional[int]
+    sexe:Optional[str]
+    specialite:Optional[str]
+    nationalite:Optional[str]
+    phone_number:Optional[str]
     photo:Optional[UploadFile]
 
 class Section(Entity):
