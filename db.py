@@ -72,11 +72,11 @@ def database_setup():
     AccountActivationHandler.send_credentials_mail(profile.nom, profile.adresse_mail, timestamp)
 
     driver.run(query, params)
-    # import py2neo
-    # try:
-    #     driver.run("CREATE CONSTRAINT FOR (n:User) REQUIRE n.adresse_mail IS UNIQUE")
-    #     driver.run("CREATE CONSTRAINT FOR (n:Etablissement) REQUIRE n.nom IS UNIQUE")
-    #     driver.run("CREATE CONSTRAINT FOR (n:Section) REQUIRE n.nom IS UNIQUE")
-    # except py2neo.errors.ClientError:
-    #     ...
-    # # driver.run()
+    import py2neo
+    try:
+        driver.run("CREATE CONSTRAINT FOR (n:User) REQUIRE n.adresse_mail IS UNIQUE")
+        driver.run("CREATE CONSTRAINT FOR (n:Etablissement) REQUIRE n.nom IS UNIQUE")
+        driver.run("CREATE CONSTRAINT FOR (n:Section) REQUIRE n.nom IS UNIQUE")
+    except py2neo.errors.ClientError:
+        ...
+    # driver.run()
