@@ -36,6 +36,13 @@ def verify_token(token:str, credentials_exception):
         data = payload.get("sub")
         if data is None:
             raise credentials_exception
-        return data
+        return parse_credentials(data)
     except JWTError:
         raise credentials_exception
+    
+
+def parse_credentials(credentials:str):
+    email = credentials[0:credentials.index('\\\\')]
+    password = credentials[credentials.index('\\\\')+2:]
+
+    return {'email':email,'password':password}

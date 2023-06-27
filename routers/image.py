@@ -3,7 +3,7 @@ from fastapi.responses import FileResponse
 import os
 
 router = APIRouter(
-    prefix='/image',tags=['Image']
+    prefix='/images',tags=['Images']
 )
 
 try:
@@ -11,7 +11,6 @@ try:
 except:
     ...
 
-@router.get('/images/{file_name}',response_class=FileResponse)
+@router.get('/{file_name}',response_class=FileResponse)
 def get_image(file_name:str):
-    print(file_name)
     return FileResponse(f"images/{file_name}")

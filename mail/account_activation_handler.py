@@ -1,6 +1,6 @@
 from fastapi import HTTPException, status, Request
 from .mail_communicator import MailCommunicator
-from globals import APP_NAME
+from globals import APP_DOMAIN, APP_NAME
 
 
     
@@ -35,6 +35,44 @@ class AccountActivationHandler:
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 detail="Something went wrong while sending the mail"
             )
+    
+    @classmethod
+    def send_credentials_mail(self, login: str, email:str, password : str) -> bool:
+
+        templates = self.generate_credentials_mail(email, login, password)
+        subject=f"[{APP_NAME}] Member Credentials"
+        recipient=email
+        try:
+            MailCommunicator.send_mail(recipient, subject, templates)
+        except:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Something went wrong while sending the mail"
+            )
+
+    @classmethod
+    def generate_credentials_mail(self, email:str, login:str, password : str) -> dict:
+        # return the mail created
+        
+        html_template = f"""
+        <div class="container" style="text-align: center;">
+            <p style="font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif; text-align: center; font-size: 1.5rem;">Hello <span style="font-weight: bold; text-transform: capitalize;">{login}</span></p>
+            <p style="font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif; text-align: center; font-size: 1.5rem;">These are your credentials for the platform {APP_DOMAIN}</p>
+            <p>Username : {email}</p>
+            <p>Password : {password}</p>
+        </div>
+		"""
+        text_template = f"""
+            Hello {login}
+            These are your credentials for the platform {APP_DOMAIN}
+            
+            Username : {email}
+            Password : {password}
+		"""
+        return {
+            "html_template" : html_template,
+            "text_template" : text_template
+        }
 
     @classmethod
     def generate_activation_mail(self, login:str, activation_link : str) -> dict:

@@ -4,13 +4,19 @@ from typing import List, Optional
 from datetime import datetime
 
 class Entity(BaseModel):
-    id:str
-    date_creation:datetime
+    id:Optional[str]
+    date_creation:Optional[datetime]
+
+    class Config:
+        orm_mode = True
 
 
 class TinyEntity(BaseModel):
     id:str
     nom:str
+
+    class Config:
+        orm_mode = True
 
 class TinyUser(TinyEntity):
     ...
@@ -51,20 +57,33 @@ class User(Entity):
     phone_number:str
     photo:Photo
 
-class UserData(BaseModel):
+
+class UserTest(BaseModel):
     
     matricule:str
     nom:str 
-    etablissement:str
-    id_section:str
     adresse_mail:EmailStr
 
-    age:Optional[int]
-    sexe:Optional[str]
-    specialite:Optional[str]
-    nationalite:Optional[str]
-    phone_number:Optional[str]
-    photo:Optional[UploadFile]
+    class Config:
+        orm_mode = True
+
+class UserData(BaseModel):
+    
+    matricule:str
+    nom:str
+    etablissement:str
+    adresse_mail:EmailStr
+
+    id_section:Optional[str] = ""
+    age:Optional[int] = 0
+    sexe:Optional[str] = ""
+    specialite:Optional[str] = ""
+    nationalite:Optional[str] = ""
+    phone_number:Optional[str] = ""
+    photo:Optional[UploadFile] = None
+
+    class Config:
+        orm_mode = True
 
 class Section(Entity):
     nom:str
@@ -88,7 +107,7 @@ class ActiviteData(BaseModel):
     id_createur:str
     titre:str
     lieu:str
-    moderateurs:Optional[List[TinyUser]]
+    moderateurs:Optional[List[TinyUser]] = []
     membre_convies:List[TinyUser]
     date_debut:datetime
     date_fin:datetime
