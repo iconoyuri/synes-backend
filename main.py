@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi_pagination import add_pagination
 from globals import APP_NAME
+from db import database_setup
 
 app = FastAPI(
     title=APP_NAME,
@@ -32,3 +33,5 @@ app.include_router(notification.router)
 app.include_router(profile.router)
 app.include_router(section.router)
 app.include_router(image.router)
+
+# database_setup()
