@@ -1,6 +1,5 @@
 from fastapi import APIRouter, UploadFile, Depends, HTTPException, status, Request
 from schemas import User, UserData, Photo, TinySection
-from typing import List
 from fastapi_pagination import LimitOffsetPage, paginate
 from oauth2 import get_current_user
 import py2neo_schemas as nodes
@@ -15,7 +14,8 @@ router = APIRouter(
 
 @router.get('/all', response_model=LimitOffsetPage[User])
 def get_profiles(credentials = Depends(get_current_user)):
-    results = nodes.User.match(graph_driver()).all()
+    driver = graph_driver(credentials)
+    results = nodes.User.match(driver).all()
     results = [User(
                 id = user.__node__.identity,
                 matricule=user.matricule, 
@@ -35,7 +35,8 @@ def get_profiles(credentials = Depends(get_current_user)):
 
 @router.get('/', response_model=User)
 def get_own_profile(credentials = Depends(get_current_user)):
-    user = nodes.User.match(graph_driver(),credentials['email']).first()
+    driver = graph_driver(credentials)
+    user = nodes.User.match(driver,credentials['email']).first()
     if not user:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
     user = User(
@@ -55,8 +56,9 @@ def get_own_profile(credentials = Depends(get_current_user)):
     return user
 
 @router.get('/{id}', response_model=User)
-def get_profile(id:str,credentials = Depends(get_current_user)):
-    user = nodes.User.match(graph_driver(),id).first()
+def get_profile(id:str, credentials = Depends(get_current_user)):
+    driver = graph_driver(credentials)
+    user = nodes.User.match(driver,id).first()
     if not user:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
     user = User(
@@ -80,7 +82,7 @@ def get_profile(id:str,credentials = Depends(get_current_user)):
 def post_profile(profile:UserData, credentials = Depends(get_current_user)):
     verify_email(profile.adresse_mail)
 
-    driver = graph_driver()
+    driver = graph_driver(credentials)
     user = nodes.User.match(driver,profile.adresse_mail).first()
     
     if user:
@@ -118,11 +120,11 @@ def post_profile(profile:UserData, credentials = Depends(get_current_user)):
                 ON CREATE 
                     SET etablissement.date_creation = $now
 
-            MERGE (user)-[:belong]->(etablissement)
-            MERGE (etablissement)-[:belong]->(section)
-            MERGE (user)-[:belong]->(section)
+            MERGE (user)-[:belong_to_school]->(etablissement)
+            MERGE (etablissement)-[:related_school]->(section)
+            MERGE (user)-[:attached_to]->(section)
 
-            MERGE (user)<-[:illustrate]-(photo:Photo)
+            MERGE (user)<-[:is_profile_photo]-(photo:Photo)
                 ON CREATE 
                     SET photo.date_creation = $now, photo.link = $link
         """
@@ -164,11 +166,11 @@ def post_profile(profile:UserData, credentials = Depends(get_current_user)):
                 ON CREATE 
                     SET section.date_creation = $now
 
-            MERGE (user)-[:belong]->(etablissement)
-            MERGE (etablissement)-[:belong]->(section)
-            MERGE (user)-[:belong]->(section)
+            MERGE (user)-[:belong_to_school]->(etablissement)
+            MERGE (etablissement)-[:related_school]->(section)
+            MERGE (user)-[:attached_to]->(section)
 
-            MERGE (user)<-[:illustrate]-(photo:Photo)
+            MERGE (user)<-[:is_profile_photo]-(photo:Photo)
                 ON CREATE 
                     SET photo.date_creation = $now, photo.link = $link
         """
@@ -194,7 +196,7 @@ def post_profile(profile:UserData, credentials = Depends(get_current_user)):
 
 @router.post('/photo', response_model=Photo)
 def post_profile_photo(photo:UploadFile, request:Request, credentials = Depends(get_current_user)):
-    driver = graph_driver()
+    driver = graph_driver(credentials)
     user = nodes.User.match(driver,credentials['email']).first()
         
     if not user:
@@ -206,7 +208,7 @@ def post_profile_photo(photo:UploadFile, request:Request, credentials = Depends(
 
     query = """
         MATCH (user:User{adresse_mail:$adresse_mail})
-        MERGE (user)<-[:illustrate]-(photo:Photo)
+        MERGE (user)<-[:is_profile_photo]-(photo:Photo)
         SET photo.date_creation = $now, photo.link = $link
     """
     params = {
@@ -223,7 +225,7 @@ def modify_profile(id:str, profile:UserData, credentials = Depends(get_current_u
     
     verify_email(profile.adresse_mail)
 
-    driver = graph_driver()
+    driver = graph_driver(credentials)
 
     user = nodes.User.match(driver,id).first()
     if not user:
@@ -259,11 +261,11 @@ def modify_profile(id:str, profile:UserData, credentials = Depends(get_current_u
                 ON CREATE 
                     SET etablissement.date_creation = $now
 
-            MERGE (user)-[:belong]->(etablissement)
-            MERGE (etablissement)-[:belong]->(section)
-            MERGE (user)-[:belong]->(section)
+            MERGE (user)-[:belong_to_school]->(etablissement)
+            MERGE (etablissement)-[:related_school]->(section)
+            MERGE (user)-[:attached_to]->(section)
         """ + ("""
-            MATCH (user)<-[:illustrate]-(photo:Photo)
+            MATCH (user)<-[:is_profile_photo]-(photo:Photo)
                 SET photo.link = $link
         """ if link else "")
 
@@ -305,11 +307,11 @@ def modify_profile(id:str, profile:UserData, credentials = Depends(get_current_u
                 ON CREATE 
                     SET section.date_creation = $now
 
-            CREATE (user)-[:belong]->(etablissement)
-            CREATE (user)-[:belong]->(section)
-            MERGE (etablissement)-[:belong]->(section)
+            CREATE (user)-[:belong_to_school]->(etablissement)
+            CREATE (user)-[:attached_to]->(section)
+            MERGE (etablissement)-[:related_school]->(section)
         """ + ("""
-            MATCH (user)<-[:illustrate]-(photo:Photo)
+            MATCH (user)<-[:is_profile_photo]-(photo:Photo)
                 SET photo.link = $link
         """ if link else "")
         params = {
@@ -331,7 +333,7 @@ def modify_profile(id:str, profile:UserData, credentials = Depends(get_current_u
 
 @router.delete('/{id}')
 def delete_profile(id:str, credentials = Depends(get_current_user)):
-    driver = graph_driver()
+    driver = graph_driver(credentials)
     user = nodes.User.match(driver,id).first()
     if not user:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
@@ -341,12 +343,12 @@ def delete_profile(id:str, credentials = Depends(get_current_user)):
 
 @router.post('/section/{id_user}/{id_section}')
 def affect_to_section(id_user:str,id_section:int, credentials = Depends(get_current_user)):
-    driver = graph_driver()
+    driver = graph_driver(credentials)
     query = """
             MATCH (section:Section) WHERE ID(section) = $id_section
-            MATCH (user:User{adresse_mail:$adresse_mail})-[b:belong]->(s:Section)
+            MATCH (user:User{adresse_mail:$adresse_mail})-[b:attached_to]->(s:Section)
             DELETE b
-            CREATE (user)-[:belong]->(section)
+            CREATE (user)-[:attached_to]->(section)
         """
     params = {
         'id_section':id_section,
@@ -357,7 +359,7 @@ def affect_to_section(id_user:str,id_section:int, credentials = Depends(get_curr
 @router.post('/password/{previous_pwd}/{new_pwd}')
 def change_password(previous_pwd:str,new_pwd:str, credentials = Depends(get_current_user)):
     from routers.authentication import find_user
-    driver = graph_driver()
+    driver = graph_driver(credentials)
     user = find_user(credentials['email'], previous_pwd)
     
     if not user:        
