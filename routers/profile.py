@@ -254,7 +254,7 @@ def modify_profile(id:str, profile:UserData, credentials = Depends(get_current_u
                     user.nationalite = $nationalite,
                     user.phone_number = $phone_number
 
-            MATCH (:Section)<-[r2:belong]-(user)-[r1:belong]->(:Etablissement)
+            MATCH (:Section)<-[r2:attached_to]-(user)-[r1:belong_to_school]->(:Etablissement)
             DELETE r1,r2
 
             MERGE (etablissement:Etablissement{nom:$nom_etablissement})
@@ -286,7 +286,7 @@ def modify_profile(id:str, profile:UserData, credentials = Depends(get_current_u
         }
     else: # if the user section was not specified
         query = """
-            MATCH (:Section)<-[r2:belong]-(user:User{adresse_mail:$adresse_mail})-[r1:belong]->(:Etablissement)
+            MATCH (:Section)<-[r2:attached_to]-(user:User{adresse_mail:$adresse_mail})-[r1:belong_to_school]->(:Etablissement)
             DELETE r1,r2
             SET
                 user.adresse_mail = $new_adresse_mail,
