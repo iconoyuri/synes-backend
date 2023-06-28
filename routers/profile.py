@@ -346,7 +346,8 @@ def affect_to_section(id_user:str,id_section:int, credentials = Depends(get_curr
     driver = graph_driver(credentials)
     query = """
             MATCH (section:Section) WHERE ID(section) = $id_section
-            MATCH (user:User{adresse_mail:$adresse_mail})-[b:attached_to]->(s:Section)
+            MATCH (user:User{adresse_mail:$adresse_mail})
+            OPTIONAL MATCH (user)-[b:attached_to]->(s:Section)
             DELETE b
             CREATE (user)-[:attached_to]->(section)
         """
