@@ -47,11 +47,11 @@ def database_setup():
             ON CREATE 
                 SET section.date_creation = $now
 
-        MERGE (user)-[:belong]->(etablissement)
-        MERGE (etablissement)-[:belong]->(section)
-        MERGE (user)-[:belong]->(section)
+        MERGE (user)-[:belong_to_school]->(etablissement)
+        MERGE (etablissement)-[:related_school]->(section)
+        MERGE (user)-[:attached_to]->(section)
 
-        MERGE (user)<-[:illustrate]-(photo:Photo)
+        MERGE (user)<-[:is_profile_photo]-(photo:Photo)
             ON CREATE 
                 SET photo.date_creation = $now, photo.link = $link
     """
