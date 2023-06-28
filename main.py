@@ -34,4 +34,4 @@ app.include_router(profile.router)
 app.include_router(section.router)
 app.include_router(image.router)
 
-database_setup()
+# database_setup()
