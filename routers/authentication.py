@@ -5,6 +5,7 @@ from oauth2 import create_access_token
 from passlib.context import CryptContext
 from py2neo_schemas import User
 from functions import graph_driver, verify_email
+from globals import DATABASE_DEFAULT_USERNAME,DATABASE_DEFAULT_PASSWORD
 
 
 router = APIRouter(
@@ -33,8 +34,9 @@ def login(login_form: OAuth2PasswordRequestForm = Depends()):
         )
 
 def find_user(identifier, password):
+    driver = graph_driver({'email':DATABASE_DEFAULT_USERNAME,'password':DATABASE_DEFAULT_PASSWORD})
     
-    user = User.match(graph_driver(),identifier).first()
+    user = User.match(driver,identifier).first()
     if not user: 
         return False
 

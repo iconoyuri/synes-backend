@@ -11,7 +11,8 @@ from mimetypes import guess_extension
 # from os import getcwd
 
 
-graph_driver = lambda username=DATABASE_DEFAULT_USERNAME,password=DATABASE_DEFAULT_PASSWORD: Graph(uri=DATABASE_URI,auth=(username,password))
+graph_driver = lambda credentials: Graph(uri=DATABASE_URI,auth=(DATABASE_DEFAULT_USERNAME,DATABASE_DEFAULT_PASSWORD))
+# graph_driver = lambda credentials: Graph(uri=DATABASE_URI,auth=(credentials['email'],credentials['password']))
 
 
 def save_image(image:UploadFile):

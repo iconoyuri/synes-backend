@@ -1,11 +1,12 @@
 from mail.account_activation_handler import AccountActivationHandler
 from functions import graph_driver, encode_password
+from globals import DATABASE_DEFAULT_USERNAME,DATABASE_DEFAULT_PASSWORD
 from datetime import datetime
 
 def database_setup():
     from schemas import UserData
 
-    driver = graph_driver()
+    driver = graph_driver({'email':DATABASE_DEFAULT_USERNAME,'password':DATABASE_DEFAULT_PASSWORD})
 
     time = datetime.now()
     time_str = str(time)
