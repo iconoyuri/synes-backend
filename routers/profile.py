@@ -17,12 +17,12 @@ def get_profiles(credentials = Depends(get_current_user)):
     driver = graph_driver(credentials)
     results = nodes.User.match(driver).all()
     results = [User(
-                id = user.__node__.identity,
+                date_creation=user.date_creation,
                 matricule=user.matricule, 
                 nom= user.nom, 
-                etablissement=str(list(user.etablissement)[0].nom), 
+                etablissement=str(list(user.etablissement)[0].nom) if len(list(user.etablissement)) > 0 else "", 
                 age=user.age,
-                section=TinySection(id=list(user.section)[0].__node__.identity, nom=list(user.section)[0].nom),
+                section=TinySection(id=list(user.section)[0].__node__.identity, nom=list(user.section)[0].nom) if len(list(user.section)) > 0 else None,
                 sexe=user.sexe,
                 specialite=user.specialite,
                 nationalite=user.nationalite,
@@ -41,11 +41,12 @@ def get_own_profile(credentials = Depends(get_current_user)):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
     user = User(
                 # id = user.__node__.identity,
+                date_creation=user.date_creation,
                 matricule=user.matricule, 
                 nom= user.nom, 
-                etablissement=str(list(user.etablissement)[0].nom), 
+                etablissement=str(list(user.etablissement)[0].nom) if len(list(user.etablissement)) > 0 else "", 
                 age=user.age,
-                section=TinySection(id=list(user.section)[0].__node__.identity, nom=list(user.section)[0].nom),
+                section=TinySection(id=list(user.section)[0].__node__.identity, nom=list(user.section)[0].nom) if len(list(user.section)) > 0 else None,
                 sexe=user.sexe,
                 specialite=user.specialite,
                 nationalite=user.nationalite,
@@ -63,11 +64,12 @@ def get_profile(email_user:str, credentials = Depends(get_current_user)):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
     user = User(
                 # id = user.__node__.identity,
+                date_creation=user.date_creation,
                 matricule=user.matricule, 
                 nom= user.nom, 
-                etablissement=str(list(user.etablissement)[0].nom), 
+                etablissement=str(list(user.etablissement)[0].nom) if len(list(user.etablissement)) > 0 else "", 
                 age=user.age,
-                section=TinySection(id=list(user.section)[0].__node__.identity, nom=list(user.section)[0].nom),
+                section=TinySection(id=list(user.section)[0].__node__.identity, nom=list(user.section)[0].nom) if len(list(user.section)) > 0 else None,
                 sexe=user.sexe,
                 specialite=user.specialite,
                 nationalite=user.nationalite,

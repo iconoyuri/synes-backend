@@ -42,20 +42,20 @@ class TinyBien(TinyEntity):
 
 
 class Photo(BaseModel):
-    link:str
+    link:Optional[str]
 
 class User(BaseModel):
     matricule:str
     nom:str 
-    etablissement:str
+    etablissement:Optional[str]
     age:int 
-    section:TinySection
+    section:Optional[TinySection]
     sexe:str
     specialite:str
     nationalite:str 
     adresse_mail:EmailStr
     phone_number:str
-    photo:Photo
+    photo:Optional[Photo]
     date_creation:Optional[datetime]
 
 
