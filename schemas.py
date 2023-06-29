@@ -75,13 +75,13 @@ class UserData(BaseModel):
     etablissement:str
     adresse_mail:EmailStr
 
-    id_section:Optional[str] = ""
-    age:Optional[int] = 0
-    sexe:Optional[str] = ""
-    specialite:Optional[str] = ""
-    nationalite:Optional[str] = ""
-    phone_number:Optional[str] = ""
-    photo:Optional[UploadFile] = None
+    id_section:Optional[int]
+    age:Optional[int]
+    sexe:Optional[str]
+    specialite:Optional[str]
+    nationalite:Optional[str]
+    phone_number:Optional[str]
+    photo:Optional[UploadFile]
 
     class Config:
         orm_mode = True
@@ -105,7 +105,7 @@ class Activite(Entity):
     photos:Optional[List[Photo]]
 
 class ActiviteData(BaseModel):
-    id_createur:str
+    email_createur:str
     titre:str
     lieu:str
     moderateurs:Optional[List[TinyUser]] = []
@@ -115,14 +115,14 @@ class ActiviteData(BaseModel):
 
 class Fond(Entity):
     createur:TinyUser
-    id_caisse:Optional[str]
+    id_caisse:Optional[int]
     titre:str
     description:str
     montant:float
 
 class FondData(BaseModel):
-    id_createur:str
-    id_caisse:Optional[str]
+    email_createur:str
+    id_caisse:Optional[int]
     titre:str
     description:str
     montant:float
@@ -134,21 +134,21 @@ class Caisse(Entity):
     montant_courant:float
 
 class CaisseData(BaseModel):
-    id_createur:str
+    email_createur:str
     nom:str
     description:str
     montant_courant:float
 
 class Depense(Entity):
     createur:TinyUser
-    id_caisse:Optional[str]
+    id_caisse:Optional[int]
     titre:str
     description:str
     montant:float
 
 class DepenseData(BaseModel):
-    id_createur:str
-    id_caisse:Optional[str]
+    email_createur:str
+    id_caisse:Optional[int]
     titre:str
     description:str
     montant:float
@@ -188,13 +188,13 @@ class Notification(Entity):
 
 
 class Contribution(Entity):
-    id_fond:str 
-    id_user:str
+    id_fond:int 
+    email_user:str
     montant:float
 
 class ContributionData(BaseModel):
-    id_fond:str 
-    id_user:str
+    id_fond:int 
+    email_user:str
     montant:float
 
 
