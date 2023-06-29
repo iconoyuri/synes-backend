@@ -12,7 +12,7 @@ class Entity(BaseModel):
 
 
 class TinyEntity(BaseModel):
-    id:str
+    id:int
     nom:str
 
     class Config:
@@ -44,7 +44,7 @@ class TinyBien(TinyEntity):
 class Photo(BaseModel):
     link:str
 
-class User(Entity):
+class User(BaseModel):
     matricule:str
     nom:str 
     etablissement:str
@@ -56,6 +56,7 @@ class User(Entity):
     adresse_mail:EmailStr
     phone_number:str
     photo:Photo
+    date_creation:Optional[datetime]
 
 
 class UserTest(BaseModel):
@@ -160,11 +161,11 @@ class Bien(Entity):
     valeur_marchande:Optional[str]
 
 class BienData(BaseModel):
-    section:TinySection
     nom:str
-    photos:Optional[List[UploadFile]]
     description:str 
     valeur_marchande:Optional[str]
+    section:Optional[TinySection]
+    photos:Optional[List[UploadFile]]
 
 class Sujet(BaseModel):
     id:str

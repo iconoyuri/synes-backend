@@ -40,7 +40,7 @@ def get_own_profile(credentials = Depends(get_current_user)):
     if not user:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
     user = User(
-                id = user.__node__.identity,
+                # id = user.__node__.identity,
                 matricule=user.matricule, 
                 nom= user.nom, 
                 etablissement=str(list(user.etablissement)[0].nom), 
@@ -55,14 +55,14 @@ def get_own_profile(credentials = Depends(get_current_user)):
                 )
     return user
 
-@router.get('/{id}', response_model=User)
-def get_profile(id:str, credentials = Depends(get_current_user)):
+@router.get('/{email_user}', response_model=User)
+def get_profile(email_user:str, credentials = Depends(get_current_user)):
     driver = graph_driver(credentials)
-    user = nodes.User.match(driver,id).first()
+    user = nodes.User.match(driver,email_user).first()
     if not user:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
     user = User(
-                id = user.__node__.identity,
+                # id = user.__node__.identity,
                 matricule=user.matricule, 
                 nom= user.nom, 
                 etablissement=str(list(user.etablissement)[0].nom), 
@@ -220,14 +220,14 @@ def post_profile_photo(photo:UploadFile, request:Request, credentials = Depends(
     return Photo(link=image_link)
 
 
-@router.put('/{id}')
-def modify_profile(id:str, profile:UserData, credentials = Depends(get_current_user)):
+@router.put('/{email_user}')
+def modify_profile(email_user:str, profile:UserData, credentials = Depends(get_current_user)):
     
     verify_email(profile.adresse_mail)
 
     driver = graph_driver(credentials)
 
-    user = nodes.User.match(driver,id).first()
+    user = nodes.User.match(driver,email_user).first()
     if not user:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
     
@@ -331,18 +331,18 @@ def modify_profile(id:str, profile:UserData, credentials = Depends(get_current_u
     driver.run(query, params)
 
 
-@router.delete('/{id}')
-def delete_profile(id:str, credentials = Depends(get_current_user)):
+@router.delete('/{email_user}')
+def delete_profile(email_user:str, credentials = Depends(get_current_user)):
     driver = graph_driver(credentials)
-    user = nodes.User.match(driver,id).first()
+    user = nodes.User.match(driver,email_user).first()
     if not user:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
 
     driver.delete(user)
 
 
-@router.post('/section/{id_user}/{id_section}')
-def affect_to_section(id_user:str,id_section:int, credentials = Depends(get_current_user)):
+@router.post('/section/{email_user}/{id_section}')
+def affect_to_section(email_user:str,id_section:int, credentials = Depends(get_current_user)):
     driver = graph_driver(credentials)
     query = """
             MATCH (section:Section) WHERE ID(section) = $id_section
@@ -353,7 +353,7 @@ def affect_to_section(id_user:str,id_section:int, credentials = Depends(get_curr
         """
     params = {
         'id_section':id_section,
-        'adresse_mail':id_user,
+        'adresse_mail':email_user,
     }
     driver.run(query,params)
 
