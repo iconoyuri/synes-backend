@@ -60,18 +60,24 @@ def post_bien(bien:BienData, request:Request, credentials = Depends(get_current_
     driver = graph_driver(credentials)
     time = datetime.now()
     time_str = str(time)
-    photos_query = ""
-    if bien.photos :
-        photos_queries = ["MERGE (:Photo{link:'" + f"{request.url.scheme}://{request.url.netloc}/{save_image(photo)}" + "',date_creation:'" + time_str + "'})-[:illustrate]->(bien)" for photo in bien.photos]
-        photos_query = reduce(lambda acc,val: f"{acc} {val}",photos_queries)
-    query = """
-        MATCH (section:Section) WHERE ID(section) = $id_section
+
+    photos_query = reduce(
+        lambda acc,val: f"{acc} {val}",
+        ["MERGE (:Photo{link:'" + f"{request.url.scheme}://{request.url.netloc}/{save_image(photo)}" + "',date_creation:'" + time_str + "'})-[:illustrate]->(bien)" for photo in bien.photos]
+        )  if bien.photos else ""
+    data_query = """
         MATCH (user:User{adresse_mail:$adresse_mail})
-        MERGE (user)<-[:create_good]-(bien:Bien{nom:$nom,description:$description,valeur:$valeur,date_creation:$now})-[:belong_section]->(section)
-    """ + photos_query
+        MERGE (user)<-[:create_good]-(bien:Bien{nom:$nom,description:$description,valeur:$valeur,date_creation:$now})
+    """
+    section_query = """
+        MATCH (section:Section) WHERE ID(section) = $id_section
+        MERGE (bien)-[:belong_section]->(section)
+    """ if bien.section else ""
+    
+    query = data_query + section_query + photos_query
     params = {
         'adresse_mail':credentials['email'],
-        'id_section':bien.section.id,
+        'id_section':bien.section.id if bien.section else "",
         'nom':bien.nom,
         'description':bien.description,
         'valeur':bien.valeur_marchande,
@@ -143,11 +149,14 @@ def upload_bien_photos(id:int, photos:List[UploadFile], request:Request, credent
     time = datetime.now()
     time_str = str(time)
 
-    photos_links = ["MERGE (:Photo{link:'" + f"{request.url.scheme}://{request.url.netloc}/{save_image(photo)}" + "',date_creation:'" + time_str + "'})-[:illustrate]->(bien)" for photo in photos]
-    photos_queries = reduce(lambda acc,val: f"{acc} {val}",photos_links)
+    photos_query = reduce(
+            lambda acc,val: f"{acc} {val}",
+            ["MERGE (:Photo{link:'" + f"{request.url.scheme}://{request.url.netloc}/{save_image(photo)}" + "',date_creation:'" + time_str + "'})-[:illustrate]->(bien)" for photo in photos]
+        )
     query = """
         MATCH (bien:Bien) WHERE ID(bien) = $id_bien
-    """ + photos_queries
+    """ + photos_query
+
     params = {
         'id_bien':id
     }
