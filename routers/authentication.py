@@ -19,7 +19,6 @@ def login(login_form: OAuth2PasswordRequestForm = Depends()):
     email = login_form.username.lower()
     verify_email(email)
     
-    # print(email,login_form.password)
     user = find_user(email, login_form.password)
     if user:
         credentials = f"{email}\\\\{login_form.password}"
