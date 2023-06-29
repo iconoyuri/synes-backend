@@ -85,7 +85,7 @@ def post_profile(profile:UserData, credentials = Depends(get_current_user)):
     verify_email(profile.adresse_mail)
 
     driver = graph_driver(credentials)
-    user = nodes.User.match(driver,profile.adresse_mail).all()
+    user = nodes.User.match(driver,profile.adresse_mail).first()
     
     if user:
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Already exists")
