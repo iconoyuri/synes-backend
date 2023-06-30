@@ -164,7 +164,7 @@ class DepenseData(BaseModel):
     montant:float
 
 class Bien(Entity):
-    section:TinySection
+    section:Optional[TinySection]
     nom:str
     photos:List[Photo]
     description:str 
