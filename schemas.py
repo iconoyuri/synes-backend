@@ -82,11 +82,11 @@ class UserData(BaseModel):
     adresse_mail:EmailStr
 
     id_section:Optional[int]
-    age:Optional[int]
-    sexe:Optional[str]
-    specialite:Optional[str]
-    nationalite:Optional[str]
-    phone_number:Optional[str]
+    age:Optional[int] = 0
+    sexe:Optional[str] = ""
+    specialite:Optional[str] = ""
+    nationalite:Optional[str] = ""
+    phone_number:Optional[str] = ""
     photo:Optional[UploadFile]
 
     class Config:
@@ -111,7 +111,7 @@ class Activite(Entity):
     moderateurs:Optional[List[TinyUser]]
 
 class ActiviteData(BaseModel):
-    email_createur:Optional[str]
+
     titre:str
     lieu:str
     date_fin:datetime
