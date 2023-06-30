@@ -62,8 +62,8 @@ def post_bien(bien:BienData, request:Request, credentials = Depends(get_current_
     driver = graph_driver(credentials)
     time = datetime.now()
     time_str = str(time)
-
-    photos_query = reduce(
+    photos_query = " WITH bien " if bien.photos else ""
+    photos_query += reduce(
         lambda acc,val: f"{acc} {val}",
         ["MERGE (:Photo{link:'" + f"{request.url.scheme}://{request.url.netloc}/{save_image(photo)}" + "',date_creation:'" + time_str + "'})-[:illustrate]->(bien)" for photo in bien.photos]
         )  if bien.photos else ""
@@ -72,6 +72,7 @@ def post_bien(bien:BienData, request:Request, credentials = Depends(get_current_
         MERGE (user)<-[:create_good]-(bien:Bien{nom:$nom,description:$description,valeur:$valeur,date_creation:$now})
     """
     section_query = """
+        WITH bien
         MATCH (section:Section) WHERE ID(section) = $id_section
         MERGE (bien)-[:belong_section]->(section)
     """ if bien.section else ""
@@ -92,8 +93,8 @@ def post_bien(bien:BienData, request:Request, credentials = Depends(get_current_
 @router.put('/{id}')
 def modify_bien(id:int, bien:BienData, request:Request, credentials = Depends(get_current_user)):
     driver = graph_driver(credentials)
-    bien = nodes.Bien.match(driver,id).first()
-    if not bien:
+    _bien = nodes.Bien.match(driver,id).first()
+    if not _bien:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
     time = datetime.now()
     time_str = str(time)
@@ -142,7 +143,7 @@ def delete_bien(id:int, credentials = Depends(get_current_user)):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
     query = """
         MATCH (bien:Bien) WHERE ID(bien) = $id_bien
-        MATCH (bien)<-[:illustrate]-(photo:Photo)
+        OPTIONAL MATCH (bien)<-[:illustrate]-(photo:Photo)
         DETACH DELETE bien, photo
     """
     params = {

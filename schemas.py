@@ -50,6 +50,9 @@ class TinyBien(TinyEntity):
 class Photo(BaseModel):
     link:Optional[str]
 
+    class Config:
+        orm_mode = True
+
 class User(BaseModel):
     matricule:str
     nom:str 
