@@ -101,7 +101,7 @@ def post_profile(profile:UserData, credentials = Depends(get_current_user)):
 
     query = ""
     params = None
-    if profile.id_section != "": # if the user section was specified
+    if profile.id_section: # if the user section was specified
         query = """
             MATCH (section:Section) WHERE ID(section) = $id_section
 
@@ -190,10 +190,10 @@ def post_profile(profile:UserData, credentials = Depends(get_current_user)):
             'now':time_str,
             'link':link
         }
-    driver.run(query, params)
 
     AccountActivationHandler.send_credentials_mail(profile.nom, profile.adresse_mail, timestamp)
-    ...
+    driver.run(query, params)
+
 
 
 @router.post('/photo', response_model=Photo)

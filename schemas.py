@@ -18,7 +18,13 @@ class TinyEntity(BaseModel):
     class Config:
         orm_mode = True
 
-class TinyUser(TinyEntity):
+class TinyUser(BaseModel):
+
+    email:str
+    nom:str
+
+    class Config:
+        orm_mode = True
     ...
 
 class TinySection(TinyEntity):
@@ -95,23 +101,24 @@ class SectionData(BaseModel):
     etablissement:str
 
 class Activite(Entity):
-    createur:TinyUser
     titre:str
     lieu:str
-    moderateurs:List[TinyUser]
-    membre_convies:List[TinyUser]
     date_debut:datetime
     date_fin:datetime
+    membre_convies:List[TinyUser]
+    createur:Optional[TinyUser]
     photos:Optional[List[Photo]]
+    moderateurs:Optional[List[TinyUser]]
 
 class ActiviteData(BaseModel):
-    email_createur:str
+    email_createur:Optional[str]
     titre:str
     lieu:str
-    moderateurs:Optional[List[TinyUser]] = []
-    membre_convies:List[TinyUser]
-    date_debut:datetime
     date_fin:datetime
+    date_debut:datetime
+    membre_convies:List[TinyUser]
+    moderateurs:Optional[List[TinyUser]]
+    photos:Optional[List[Photo]]
 
 class Fond(Entity):
     createur:TinyUser

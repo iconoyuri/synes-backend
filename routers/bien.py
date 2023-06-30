@@ -1,4 +1,4 @@
-from fastapi import APIRouter, UploadFile, Depends, Request
+from fastapi import APIRouter, UploadFile, Depends, Request, HTTPException, status
 from schemas import Bien, BienData, TinySection, Photo
 from typing import List
 from fastapi_pagination import LimitOffsetPage, paginate
@@ -36,10 +36,12 @@ def get_biens(credentials = Depends(get_current_user)):
 
 
 @router.get('/{id}', response_model=Bien)
-def get_bien(id:str, credentials = Depends(get_current_user)):
+def get_bien(id:int, credentials = Depends(get_current_user)):
     driver = graph_driver(credentials)
 
     bien = nodes.Bien.match(driver,id).first()
+    if not bien:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
     bien = Bien(
             id=bien.__node__.identity,
             date_creation=bien.date_creation,
@@ -90,6 +92,9 @@ def post_bien(bien:BienData, request:Request, credentials = Depends(get_current_
 @router.put('/{id}')
 def modify_bien(id:int, bien:BienData, request:Request, credentials = Depends(get_current_user)):
     driver = graph_driver(credentials)
+    bien = nodes.Bien.match(driver,id).first()
+    if not bien:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
     time = datetime.now()
     time_str = str(time)
     data_query = """
@@ -132,6 +137,9 @@ def modify_bien(id:int, bien:BienData, request:Request, credentials = Depends(ge
 @router.delete('/{id}')
 def delete_bien(id:int, credentials = Depends(get_current_user)):
     driver = graph_driver(credentials)
+    bien = nodes.Bien.match(driver,id).first()
+    if not bien:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
     query = """
         MATCH (bien:Bien) WHERE ID(bien) = $id_bien
         MATCH (bien)<-[:illustrate]-(photo:Photo)
@@ -146,6 +154,9 @@ def delete_bien(id:int, credentials = Depends(get_current_user)):
 @router.post('/photos/{id}')
 def upload_bien_photos(id:int, photos:List[UploadFile], request:Request, credentials = Depends(get_current_user)):
     driver = graph_driver(credentials)
+    bien = nodes.Bien.match(driver,id).first()
+    if not bien:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
     time = datetime.now()
     time_str = str(time)
 

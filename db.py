@@ -17,11 +17,6 @@ def database_setup():
     profile = UserData(
         matricule='19M2222',
         nom='MELIE URIEL',
-        age=12,
-        sexe='Masculin',
-        specialite='Informatique',
-        nationalite='cmr',
-        phone_number='4894156',
         etablissement='ngoakele',
         adresse_mail='uriel.melie@facsciences-uy1.cm' 
     )
