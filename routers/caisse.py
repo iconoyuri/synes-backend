@@ -54,8 +54,13 @@ def get_caisse(id: int, credentials=Depends(get_current_user)):
 @router.post('/')
 def post_caisse(caisse: CaisseData, credentials=Depends(get_current_user)):
     driver = graph_driver(credentials)
+
+    from datetime import datetime
+    time = datetime.now()
+    time_str = str(time)
+
     caisse_node = nodes.Caisse(nom=caisse.nom,
-                               description=caisse.description, montant_courant=caisse.montant_courant)
+                               description=caisse.description, montant_courant=caisse.montant_courant, date_creation=time_str)
 
     createur = nodes.User.match(driver, caisse.email_createur).first()
     if not createur:

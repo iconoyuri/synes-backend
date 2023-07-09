@@ -61,8 +61,12 @@ def get_depense(id: int, credentials=Depends(get_current_user)):
 @router.post('/')
 def post_depense(depense: DepenseData, credentials=Depends(get_current_user)):
     driver = graph_driver(credentials)
+
+    from datetime import datetime
+    time = datetime.now()
+    time_str = str(time)
     depense_node = nodes.Depense(titre=depense.titre,
-                      description=depense.description, montant=depense.montant)
+                      description=depense.description, montant=depense.montant, date_creation=time_str)
     
     createur = nodes.User.match(driver, depense.email_createur).first()
     if not createur:

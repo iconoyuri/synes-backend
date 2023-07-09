@@ -61,8 +61,14 @@ def get_fond(id: int, credentials=Depends(get_current_user)):
 @router.post('/')
 def post_fond(fond: FondData, credentials=Depends(get_current_user)):
     driver = graph_driver(credentials)
+
+    from datetime import datetime
+    time = datetime.now()
+    time_str = str(time)
+    
     fond_node = nodes.Fond(titre=fond.titre,
-                      description=fond.description, montant=fond.montant)
+                      description=fond.description, montant=fond.montant, date_creation=time_str)
+    
     createur = nodes.User.match(driver, fond.email_createur).first()
     if not createur:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
