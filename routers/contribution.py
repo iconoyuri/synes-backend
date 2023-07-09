@@ -28,7 +28,7 @@ router = APIRouter(
 # ...
 
 
-@router.get('/{fond_id}', response_model=List[Contribution])
+@router.get('/{fond_id}', response_model=LimitOffsetPage[Contribution])
 def get_contributions(fond_id: int, credentials=Depends(get_current_user)):
     driver = graph_driver(credentials)
 
@@ -40,7 +40,7 @@ def get_contributions(fond_id: int, credentials=Depends(get_current_user)):
         Contribution(id_fond=fond.__node__.identity, email_user=user.adresse_mail, montant=fond.contributeurs.get(user, 'montant'), date_creation=fond.contributeurs.get(user, 'date')) for user in list(fond.contributeurs)
     ]
 
-    return contributions
+    return paginate(contributions)
     ...
 
 
