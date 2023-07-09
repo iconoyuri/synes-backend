@@ -200,8 +200,9 @@ class Notification(Entity):
     type:str
 
 
-class Contribution(Entity):
+class Contribution(BaseModel):
     id_fond:int 
+    date_creation:Optional[datetime]
     email_user:str
     montant:float
 
