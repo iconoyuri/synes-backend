@@ -77,10 +77,31 @@ def post_fond(fond: FondData, credentials=Depends(get_current_user)):
 
 
 @router.put('/{id}')
-def modify_fond(id: str, fond: FondData):
+def modify_fond(id: int, fond: FondData, credentials=Depends(get_current_user)):
+    driver = graph_driver(credentials)
+
+    fond_node = nodes.Fond.match(driver, id).first()
+    if not fond_node:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
+    
+    fond_node.titre = fond.titre
+    fond_node.description = fond.description
+    fond_node.montant = fond.montant
+    
+    caisse = nodes.Caisse.match(driver, fond.id_caisse).first()
+    if caisse:
+        fond_node.caisse.clear()
+        fond_node.caisse.add(caisse)
+
+    driver.push(fond_node)
     ...
 
 
-@router.delete('/{id}')
-def delete_fond(id: str):
+@router.delete('/{id}')    
+def delete_fond(id: str, credentials=Depends(get_current_user)):
+    driver = graph_driver(credentials)
+    fond = nodes.Fond.match(driver, id).first()
+    if not fond:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
+    driver.delete(fond)
     ...

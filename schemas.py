@@ -132,7 +132,8 @@ class Fond(Entity):
 
 class FondData(BaseModel):
     email_createur:str
-    id_caisse:Optional[int]
+    id_caisse:int
+    # id_caisse:Optional[int]
     titre:str
     description:str
     montant:float
@@ -147,18 +148,20 @@ class CaisseData(BaseModel):
     email_createur:str
     nom:str
     description:str
-    montant_courant:float
+    montant_courant:Optional[float] = 0
 
 class Depense(Entity):
     createur:TinyUser
-    id_caisse:Optional[int]
+    id_caisse:int
+    # id_caisse:Optional[int]
     titre:str
     description:str
     montant:float
 
 class DepenseData(BaseModel):
     email_createur:str
-    id_caisse:Optional[int]
+    id_caisse:int
+    # id_caisse:Optional[int]
     titre:str
     description:str
     montant:float
