@@ -196,8 +196,10 @@ class Action(BaseModel):
 
 class Notification(Entity):
     contenu:str 
-    entity:TinyEntity
-    type:str
+    sujet:str
+    lien_associe:str
+    # entity:Optional[TinyEntity]
+    type:Optional[str]
 
 
 class Contribution(BaseModel):

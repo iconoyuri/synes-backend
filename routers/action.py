@@ -9,7 +9,7 @@ router = APIRouter(
     prefix='/action',tags=['Action']
 )
 
-@router.get('/all', response_model=LimitOffsetPage[Action])
-def get_actions(credentials = Depends(get_current_user)):
-    return paginate([])
-    ...
+# @router.get('/all', response_model=LimitOffsetPage[Action])
+# def get_actions(credentials = Depends(get_current_user)):
+#     return paginate([])
+#     ...

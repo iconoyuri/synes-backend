@@ -86,7 +86,6 @@ class Notification(CreatedEntity):
     contenu = Property()
     type = Property(default="Simple")
     lien_associe = Property()
-    date = Property()
 
     utilisateurs_notifies = RelatedTo('User', 'notify')
 
