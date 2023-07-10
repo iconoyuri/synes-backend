@@ -67,7 +67,7 @@ def post_contribution(contribution: ContributionData, credentials=Depends(get_cu
     time_str = str(time)
     createur.fonds_contribues.add(
         fond, {
-            'montant': contribution.montant + createur.fonds_contribues.get(fond, 'montant'),
+            'montant': contribution.montant + (createur.fonds_contribues.get(fond, 'montant') or 0),
             'date': time_str
         })
     caisse.montant_courant = caisse.montant_courant + contribution.montant
