@@ -103,6 +103,20 @@ def post_activite(activite:ActiviteData, request:Request, credentials = Depends(
     }
     driver.run(query, params)
 
+    query = """
+        MATCH (user:User)
+        MERGE (n:Notification{sujet:$sujet, contenu:$contenu, type:$type, lien_associe:$lien_associe, date_creation:$date_creation})
+        MERGE (n)-[r:notify]->(user)
+    """
+    params = {
+        'sujet': f'Nouvelle Activité',
+        'contenu': f'{credentials["email"]} vient de plannifier une nouvelle activité',
+        'type': 'Simple',
+        'lien_associe': '',
+        'date_creation': time_str
+    }
+    driver.run(query, params)
+
 
 @router.put('/{id}')
 def modify_activite(id:int, activite:ActiviteData,request: Request, credentials = Depends(get_current_user)):
@@ -168,6 +182,23 @@ def modify_activite(id:int, activite:ActiviteData,request: Request, credentials 
         'date_fin':str(activite.date_fin)
     }
     driver.run(query, params)
+
+    query = """
+        MATCH (user:User)
+        MERGE (n:Notification{sujet:$sujet, contenu:$contenu, type:$type, lien_associe:$lien_associe, date_creation:$date_creation})
+        MERGE (n)-[r:notify]->(user)
+    """
+    from datetime import datetime
+    time = datetime.now()
+    time_str = str(time)
+    params = {
+        'sujet': f'Modification Activité',
+        'contenu': f'{credentials["email"]} vient de modifier une activité',
+        'type': 'Simple',
+        'lien_associe': '',
+        'date_creation': time_str
+    }
+    driver.run(query, params)
     ...
 
 
@@ -179,6 +210,23 @@ def delete_activite(id:int,credentials = Depends(get_current_user)):
     if not activite:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
     driver.delete(activite)
+
+    query = """
+        MATCH (user:User)
+        MERGE (n:Notification{sujet:$sujet, contenu:$contenu, type:$type, lien_associe:$lien_associe, date_creation:$date_creation})
+        MERGE (n)-[r:notify]->(user)
+    """
+    from datetime import datetime
+    time = datetime.now()
+    time_str = str(time)
+    params = {
+        'sujet': f'Suppression Activité',
+        'contenu': f'{credentials["email"]} vient de supprimer une activité',
+        'type': 'Simple',
+        'lien_associe': '',
+        'date_creation': time_str
+    }
+    driver.run(query, params)
 
 
 @router.post('/photos/{id}')
