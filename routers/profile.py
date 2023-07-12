@@ -194,6 +194,21 @@ def post_profile(profile:UserData, credentials = Depends(get_current_user)):
     AccountActivationHandler.send_credentials_mail(profile.nom, profile.adresse_mail, timestamp)
     driver.run(query, params)
 
+    query = """
+        MATCH (user:User)-[:belong_to_school]->(etablissement:Etablissement{nom:$nom_etablissement})
+        MERGE (n:Notification{sujet:$sujet, contenu:$contenu, type:$type, lien_associe:$lien_associe, date_creation:$date_creation})
+        MERGE (n)-[r:notify]->(user)
+    """
+    params = {
+        'sujet': f'Ajout membre',
+        'contenu': f'{credentials["email"]} vient d\'ajouter un nouveau membre',
+        'nom_etablissement':profile.etablissement,
+        'type': 'Simple',
+        'lien_associe': '',
+        'date_creation': time_str
+    }
+    driver.run(query, params)
+
 
 
 @router.post('/photo', response_model=Photo)
@@ -219,6 +234,7 @@ def post_profile_photo(photo:UploadFile, request:Request, credentials = Depends(
         'link':image_link
     }
     driver.run(query, params)
+    
     return Photo(link=image_link)
 
 
@@ -342,6 +358,24 @@ def delete_profile(email_user:str, credentials = Depends(get_current_user)):
 
     driver.delete(user)
 
+    query = """
+        MATCH (user:User)
+        MERGE (n:Notification{sujet:$sujet, contenu:$contenu, type:$type, lien_associe:$lien_associe, date_creation:$date_creation})
+        MERGE (n)-[r:notify]->(user)
+    """
+
+    from datetime import datetime
+    time = datetime.now()
+    time_str = str(time)
+    params = {
+        'sujet': f'Exclusion Membre',
+        'contenu': f'Le membre {user.nom} vient d\'ètre exclu par {credentials["email"]}',
+        'type': 'Simple',
+        'lien_associe': '',
+        'date_creation': time_str
+    }
+    driver.run(query, params)
+
 
 @router.post('/section/{email_user}/{id_section}')
 def affect_to_section(email_user:str,id_section:int, credentials = Depends(get_current_user)):
@@ -358,6 +392,24 @@ def affect_to_section(email_user:str,id_section:int, credentials = Depends(get_c
         'adresse_mail':email_user,
     }
     driver.run(query,params)
+
+    query = """
+        MATCH (user:User)
+        MERGE (n:Notification{sujet:$sujet, contenu:$contenu, type:$type, lien_associe:$lien_associe, date_creation:$date_creation})
+        MERGE (n)-[r:notify]->(user)
+    """
+
+    from datetime import datetime
+    time = datetime.now()
+    time_str = str(time)
+    params = {
+        'sujet': f'Affectation Membre',
+        'contenu': f'Le membre {email_user} vient d\'ètre affecté une nouvelle section par {credentials["email"]}',
+        'type': 'Simple',
+        'lien_associe': '',
+        'date_creation': time_str
+    }
+    driver.run(query, params)
 
 @router.post('/password/{previous_pwd}/{new_pwd}')
 def change_password(previous_pwd:str,new_pwd:str, credentials = Depends(get_current_user)):
