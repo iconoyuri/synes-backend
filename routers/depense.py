@@ -86,13 +86,27 @@ def post_depense(depense: DepenseData, credentials=Depends(get_current_user)):
     driver.push(depense_node)
     driver.push(caisse)
 
+    query = """
+        MATCH (user:User)
+        MERGE (n:Notification{sujet:$sujet, contenu:$contenu, type:$type, lien_associe:$lien_associe, date_creation:$date_creation})
+        MERGE (n)-[r:notify]->(user)
+    """
+    params = {
+        'sujet': f'Création Dépense',
+        'contenu': f'{createur.nom} vient de créer une nouvelle dépense',
+        'type': 'Simple',
+        'lien_associe': '',
+        'date_creation': time_str
+    }
+    driver.run(query, params)
 
 
-@router.put('/{id}')
-def modify_depense(id:int, depense:DepenseData):
-    ...
+
+# @router.put('/{id}')
+# def modify_depense(id:int, depense:DepenseData):
+#     ...
 
 
-@router.delete('/{id}')
-def delete_depense(id:int):
-    ...
+# @router.delete('/{id}')
+# def delete_depense(id:int):
+#     ...
