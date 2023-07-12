@@ -89,9 +89,9 @@ def post_caisse(caisse: CaisseData, credentials=Depends(get_current_user)):
 def modify_caisse(id: int, caisse: CaisseData, credentials=Depends(get_current_user)):
     driver = graph_driver(credentials)
     caisse_node = nodes.Caisse.match(driver, id).first()
-    nom_caisse = caisse_node.nom
     if not caisse_node:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
+    nom_caisse = caisse_node.nom
     caisse_node.nom = caisse.nom
     caisse_node.description = caisse.description
     driver.push(caisse_node)
@@ -105,7 +105,7 @@ def modify_caisse(id: int, caisse: CaisseData, credentials=Depends(get_current_u
     time = datetime.now()
     time_str = str(time)
     params = {
-        'sujet': f'Création Caisse',
+        'sujet': f'Modification Caisse',
         'contenu': f'La caisse {nom_caisse} vient d\'ètre modifiée par {credentials["email"]}',
         'type': 'Simple',
         'lien_associe': '',
@@ -133,7 +133,7 @@ def delete_caisse(id: int, credentials=Depends(get_current_user)):
     time = datetime.now()
     time_str = str(time)
     params = {
-        'sujet': f'Création Caisse',
+        'sujet': f'Suppression Caisse',
         'contenu': f'La caisse {caisse.nom} vient d\'ètre supprimée par {credentials["email"]}',
         'type': 'Simple',
         'lien_associe': '',

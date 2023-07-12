@@ -79,6 +79,20 @@ def post_fond(fond: FondData, credentials=Depends(get_current_user)):
         fond_node.caisse.add(caisse)
     driver.push(fond_node)
 
+    query = """
+        MATCH (user:User)
+        MERGE (n:Notification{sujet:$sujet, contenu:$contenu, type:$type, lien_associe:$lien_associe, date_creation:$date_creation})
+        MERGE (n)-[r:notify]->(user)
+    """
+    params = {
+        'sujet': f'Création Fond',
+        'contenu': f'{createur.nom} vient de créer un nouveau fond',
+        'type': 'Simple',
+        'lien_associe': '',
+        'date_creation': time_str
+    }
+    driver.run(query, params)
+
     ...
 
 
@@ -89,7 +103,7 @@ def modify_fond(id: int, fond: FondData, credentials=Depends(get_current_user)):
     fond_node = nodes.Fond.match(driver, id).first()
     if not fond_node:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
-    
+    nom_fond = fond_node.titre
     fond_node.titre = fond.titre
     fond_node.description = fond.description
     fond_node.montant = fond.montant
@@ -100,6 +114,23 @@ def modify_fond(id: int, fond: FondData, credentials=Depends(get_current_user)):
         fond_node.caisse.add(caisse)
 
     driver.push(fond_node)
+
+    query = """
+        MATCH (user:User)
+        MERGE (n:Notification{sujet:$sujet, contenu:$contenu, type:$type, lien_associe:$lien_associe, date_creation:$date_creation})
+        MERGE (n)-[r:notify]->(user)
+    """
+    from datetime import datetime
+    time = datetime.now()
+    time_str = str(time)
+    params = {
+        'sujet': f'Modification Fond',
+        'contenu': f'Le fond {nom_fond} vient d\'ètre modifiée par {credentials["email"]}',
+        'type': 'Simple',
+        'lien_associe': '',
+        'date_creation': time_str
+    }
+    driver.run(query, params)
     ...
 
 
@@ -110,4 +141,22 @@ def delete_fond(id: int, credentials=Depends(get_current_user)):
     if not fond:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
     driver.delete(fond)
+
+    query = """
+        MATCH (user:User)
+        MERGE (n:Notification{sujet:$sujet, contenu:$contenu, type:$type, lien_associe:$lien_associe, date_creation:$date_creation})
+        MERGE (n)-[r:notify]->(user)
+    """
+
+    from datetime import datetime
+    time = datetime.now()
+    time_str = str(time)
+    params = {
+        'sujet': f'Suppression Fond',
+        'contenu': f'Le fond {fond.titre} vient d\'ètre supprimée par {credentials["email"]}',
+        'type': 'Simple',
+        'lien_associe': '',
+        'date_creation': time_str
+    }
+    driver.run(query, params)
     ...
