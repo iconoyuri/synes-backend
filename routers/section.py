@@ -67,6 +67,20 @@ def post_section(section:SectionData, credentials = Depends(get_current_user)):
     }
     driver.run(query, params)
 
+    query = """
+        MATCH (user:User)
+        MERGE (n:Notification{sujet:$sujet, contenu:$contenu, type:$type, lien_associe:$lien_associe, date_creation:$date_creation})
+        MERGE (n)-[r:notify]->(user)
+    """
+    params = {
+        'sujet': f'Création Section',
+        'contenu': f'{credentials["email"]} vient de créer une nouvelle section',
+        'type': 'Simple',
+        'lien_associe': '',
+        'date_creation': time_str
+    }
+    driver.run(query, params)
+
 
 @router.put('/{id}')
 def modify_section(id:int, section:SectionData, credentials = Depends(get_current_user)):
@@ -96,6 +110,20 @@ def modify_section(id:int, section:SectionData, credentials = Depends(get_curren
         'nom':section.nom
     }
     driver.run(query, params)
+    
+    query = """
+        MATCH (user:User)
+        MERGE (n:Notification{sujet:$sujet, contenu:$contenu, type:$type, lien_associe:$lien_associe, date_creation:$date_creation})
+        MERGE (n)-[r:notify]->(user)
+    """
+    params = {
+        'sujet': f'Modification Section',
+        'contenu': f'{credentials["email"]} vient de modifier la section {_section.nom}',
+        'type': 'Simple',
+        'lien_associe': '',
+        'date_creation': time_str
+    }
+    driver.run(query, params)
 
 
 @router.delete('/{id}')
@@ -106,4 +134,21 @@ def delete_section(id:int, credentials = Depends(get_current_user)):
     if not section:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
     driver.delete(section)
+
+    query = """
+        MATCH (user:User)
+        MERGE (n:Notification{sujet:$sujet, contenu:$contenu, type:$type, lien_associe:$lien_associe, date_creation:$date_creation})
+        MERGE (n)-[r:notify]->(user)
+    """
+    from datetime import datetime
+    time = datetime.now()
+    time_str = str(time)
+    params = {
+        'sujet': f'Suppression Section',
+        'contenu': f'{credentials["email"]} vient de supprimer la section {_section.nom}',
+        'type': 'Simple',
+        'lien_associe': '',
+        'date_creation': time_str
+    }
+    driver.run(query, params)
     ...
