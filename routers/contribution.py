@@ -51,7 +51,7 @@ def post_contribution(contribution: ContributionData, credentials=Depends(get_cu
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED, detail="Montant inférieur à 1")
 
-    createur = nodes.User.match(driver, contribution.email_user).first()
+    createur = nodes.User.match(driver, contribution.email_user or credentials['email']).first()
     if not createur:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
     fond = nodes.Fond.match(driver, contribution.id_fond).first()
@@ -73,4 +73,19 @@ def post_contribution(contribution: ContributionData, credentials=Depends(get_cu
     caisse.montant_courant = caisse.montant_courant + contribution.montant
     driver.push(createur)
     driver.push(caisse)
+    
+    query = """
+        MATCH (user:User)
+        MERGE (n:Notification{sujet:$sujet, contenu:$contenu, type:$type, lien_associe:$lien_associe, date_creation:$date_creation})
+        MERGE (n)-[r:notify]->(user)
+    """
+    params = {
+        'sujet': f'Contribution au fond "{fond.titre}"',
+        'contenu': f'{createur.nom} vient de contribuer le montant {contribution.montant} FCFA pour le fond {fond.titre}',
+        'type': 'Simple',
+        'lien_associe': '',
+        'date_creation': time_str
+    }
+    driver.run(query, params)
+
     ...
