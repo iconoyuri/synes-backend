@@ -104,7 +104,7 @@ def modify_fond(id: int, fond: FondData, credentials=Depends(get_current_user)):
 
 
 @router.delete('/{id}')    
-def delete_fond(id: str, credentials=Depends(get_current_user)):
+def delete_fond(id: int, credentials=Depends(get_current_user)):
     driver = graph_driver(credentials)
     fond = nodes.Fond.match(driver, id).first()
     if not fond:

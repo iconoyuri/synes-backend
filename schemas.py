@@ -162,7 +162,7 @@ class Caisse(Entity):
 
 
 class CaisseData(BaseModel):
-    email_createur: str
+    email_createur: Optional[str]
     nom: str
     description: str
     montant_courant: Optional[float] = 0
