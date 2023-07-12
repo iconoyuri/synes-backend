@@ -87,6 +87,23 @@ def post_bien(bien:BienData, request:Request, credentials = Depends(get_current_
         'now':time_str
     }
     driver.run(query, params)
+
+    query = """
+        MATCH (user:User)
+        MERGE (n:Notification{sujet:$sujet, contenu:$contenu, type:$type, lien_associe:$lien_associe, date_creation:$date_creation})
+        MERGE (n)-[r:notify]->(user)
+    """
+    from datetime import datetime
+    time = datetime.now()
+    time_str = str(time)
+    params = {
+        'sujet': f'Ajout bien',
+        'contenu': f'{credentials["user"]} vient d\'ajouter un bien '+ 'au syndicat' if not bien.section else f'à la section {bien.section.id}',
+        'type': 'Simple',
+        'lien_associe': '',
+        'date_creation': time_str
+    }
+    driver.run(query, params)
     ...
 
 
@@ -123,6 +140,22 @@ def modify_bien(id:int, bien:BienData, request:Request, credentials = Depends(ge
             DELETE i
         """ + str(reduce(lambda acc,val: f"{acc} {val}",photos_queries))
     
+    query = """
+        MATCH (user:User)
+        MERGE (n:Notification{sujet:$sujet, contenu:$contenu, type:$type, lien_associe:$lien_associe, date_creation:$date_creation})
+        MERGE (n)-[r:notify]->(user)
+    """
+    from datetime import datetime
+    time = datetime.now()
+    time_str = str(time)
+    params = {
+        'sujet': f'Modification bien',
+        'contenu': f'{credentials["user"]} vient de modifier un bien '+ 'du syndicat' if not bien.section else f'de la section {bien.section.id}',
+        'type': 'Simple',
+        'lien_associe': '',
+        'date_creation': time_str
+    }
+    driver.run(query, params)
 
     query = data_query + section_query + photos_query 
     params = {
@@ -148,6 +181,23 @@ def delete_bien(id:int, credentials = Depends(get_current_user)):
     """
     params = {
         'id_bien':id
+    }
+    driver.run(query, params)
+    
+    query = """
+        MATCH (user:User)
+        MERGE (n:Notification{sujet:$sujet, contenu:$contenu, type:$type, lien_associe:$lien_associe, date_creation:$date_creation})
+        MERGE (n)-[r:notify]->(user)
+    """
+    from datetime import datetime
+    time = datetime.now()
+    time_str = str(time)
+    params = {
+        'sujet': f'Suppression bien',
+        'contenu': f'{credentials["user"]} vient de supprimer un bien',
+        'type': 'Simple',
+        'lien_associe': '',
+        'date_creation': time_str
     }
     driver.run(query, params)
 
